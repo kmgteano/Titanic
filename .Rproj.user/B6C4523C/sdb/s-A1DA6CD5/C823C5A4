@@ -1,0 +1,16 @@
+{
+    "contents" : "# 14 May 2015\n# Titanic: Getting Started with R\n# Inspired by Trevor Stephens\n\nlibrary(rpart)\n\n# Read in data sets\ntrain <- read.csv(\"train.csv\")\ntest <- read.csv(\"test.csv\")\n\n# Define n (number of observations)\ntrain_n <- length(train$PassengerId)\ntest_n <- length(test$PassengerId)\n\n# Initialize: everyone dies. \ntest$Survived <- 0\n\n# Let's make a decision tree.\n\nfit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked, data = train, method = \"class\")\n\n# Let's use the decision tree.\n\nPrediction <- predict(fit, test, type=\"class\")\n\n### Create CSV to submit\nsubmit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)\nwrite.csv(submit, file = \"submission.csv\", row.names = FALSE)",
+    "created" : 1431807514944.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2302748616",
+    "id" : "C823C5A4",
+    "lastKnownWriteTime" : 1431812642,
+    "path" : "~/GitHub/Titanic/Tutorial1.R",
+    "project_path" : "Tutorial1.R",
+    "properties" : {
+    },
+    "source_on_save" : true,
+    "type" : "r_source"
+}
