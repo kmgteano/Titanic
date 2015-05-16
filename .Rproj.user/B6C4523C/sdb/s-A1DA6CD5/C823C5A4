@@ -1,12 +1,12 @@
 {
-    "contents" : "# 14 May 2015\n# Titanic: Getting Started with R\n# Inspired by Trevor Stephens\n\nlibrary(rpart)\n\n# Read in data sets\ntrain <- read.csv(\"train.csv\")\ntest <- read.csv(\"test.csv\")\n\n# Define n (number of observations)\ntrain_n <- length(train$PassengerId)\ntest_n <- length(test$PassengerId)\n\n# Initialize: everyone dies. \ntest$Survived <- 0\n\n# Let's make a decision tree.\n\nfit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked, data = train, method = \"class\")\n\n# Let's use the decision tree.\n\nPrediction <- predict(fit, test, type=\"class\")\n\n### Create CSV to submit\nsubmit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)\nwrite.csv(submit, file = \"submission.csv\", row.names = FALSE)",
+    "contents" : "# 14 May 2015\n# Titanic: Getting Started with R\n# Inspired by Trevor Stephens\n\nlibrary(rpart)\n\n# Read in data sets\ntrain <- read.csv(\"train.csv\")\ntest <- read.csv(\"test.csv\")\n\n# Define n (number of observations)\ntrain_n <- length(train$PassengerId)\ntest_n <- length(test$PassengerId)\n\n# Initialize: we just don't know. \ntest$Survived <- NA\n\n# Combine data sets.\ncombined <- rbind(train, test)\n\n### FEATURE ENGINEERING ON COMBINED DATA FRAME\n\n# Extract titles\ncombined$Name <- as.character(combined$Name)\ncombined$Title <- sapply(combined$Name, FUN=function(x) {strsplit(x,split='[,.]')[[1]][2]})\ncombined$Title <- sub(' ','',combined$Title)\n\n# Group rare titles together\ncombined$Title[combined$Title %in% c('Capt','Col','Don','Major','Sir')] <- 'Sir'\ncombined$Title[combined$Title %in% c('Lady','Dona','the Countess')] <- 'Lady'\ncombined$Title[combined$Title %in% c('Mme','Mrs')] <- 'Mrs'\ncombined$Title[combined$Title %in% c('Ms','Miss','Mlle')] <- 'Miss'\ncombined$Title[combined$Title %in% c('Master','Jonkheer')] <- 'Master'\n\n# Turn title into a factor\ncombined$Title <- factor(combined$Title)\n\n### RE-BREAK DATA INTO TEST VS TRAIN\ntrain <- combined[1 : train_n,]\ntest <- combined[(train_n + 1):(train_n + test_n),]\n\n# Let's make a decision tree.\n\nfit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title, data = train, method = \"class\")\n\n# Let's use the decision tree.\n\ntest$Survived <- predict(fit, test, type=\"class\")\n\n### Create CSV to submit\nsubmit <- data.frame(PassengerId = test$PassengerId, Survived = test$Survived)\nwrite.csv(submit, file = \"submission.csv\", row.names = FALSE)",
     "created" : 1431807514944.000,
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2302748616",
+    "hash" : "3801599402",
     "id" : "C823C5A4",
-    "lastKnownWriteTime" : 1431812642,
+    "lastKnownWriteTime" : 1431814957,
     "path" : "~/GitHub/Titanic/Tutorial1.R",
     "project_path" : "Tutorial1.R",
     "properties" : {

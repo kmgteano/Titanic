@@ -12,17 +12,41 @@ test <- read.csv("test.csv")
 train_n <- length(train$PassengerId)
 test_n <- length(test$PassengerId)
 
-# Initialize: everyone dies. 
-test$Survived <- 0
+# Initialize: we just don't know. 
+test$Survived <- NA
+
+# Combine data sets.
+combined <- rbind(train, test)
+
+### FEATURE ENGINEERING ON COMBINED DATA FRAME
+
+# Extract titles
+combined$Name <- as.character(combined$Name)
+combined$Title <- sapply(combined$Name, FUN=function(x) {strsplit(x,split='[,.]')[[1]][2]})
+combined$Title <- sub(' ','',combined$Title)
+
+# Group rare titles together
+combined$Title[combined$Title %in% c('Capt','Col','Don','Major','Sir')] <- 'Sir'
+combined$Title[combined$Title %in% c('Lady','Dona','the Countess')] <- 'Lady'
+combined$Title[combined$Title %in% c('Mme','Mrs')] <- 'Mrs'
+combined$Title[combined$Title %in% c('Ms','Miss','Mlle')] <- 'Miss'
+combined$Title[combined$Title %in% c('Master','Jonkheer')] <- 'Master'
+
+# Turn title into a factor
+combined$Title <- factor(combined$Title)
+
+### RE-BREAK DATA INTO TEST VS TRAIN
+train <- combined[1 : train_n,]
+test <- combined[(train_n + 1):(train_n + test_n),]
 
 # Let's make a decision tree.
 
-fit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked, data = train, method = "class")
+fit <- rpart(Survived ~ Pclass + Sex + Age + SibSp + Parch + Fare + Embarked + Title, data = train, method = "class")
 
 # Let's use the decision tree.
 
-Prediction <- predict(fit, test, type="class")
+test$Survived <- predict(fit, test, type="class")
 
 ### Create CSV to submit
-submit <- data.frame(PassengerId = test$PassengerId, Survived = Prediction)
+submit <- data.frame(PassengerId = test$PassengerId, Survived = test$Survived)
 write.csv(submit, file = "submission.csv", row.names = FALSE)
