@@ -1,0 +1,16 @@
+{
+    "contents" : "# 14 May 2015\n# Titanic: Getting Started with R\n# Inspired by Trevor Stephens\n\n# Read in data sets\ntrain <- read.csv(\"train.csv\")\ntest <- read.csv(\"test.csv\")\n\n# Define n (number of observations)\ntrain_n <- length(train$PassengerId)\ntest_n <- length(test$PassengerId)\n\n# Initialize: everyone dies. \ntest$Survived <- rep(0, test_n)\n\n\n### Create CSV to submit\nsubmit <- data.frame(PassengerId = test$PassengerId, Survied = test$Survived)\nwrite.csv(submit, file = \"submission.csv\", row.names = FALSE)",
+    "created" : 1431799360980.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "46580855",
+    "id" : "F336C56F",
+    "lastKnownWriteTime" : 1431798732,
+    "path" : "~/GitHub/Titanic/Tutorial1.R",
+    "project_path" : "Tutorial1.R",
+    "properties" : {
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
